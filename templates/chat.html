@@ -28,6 +28,10 @@
 </head>
 <body class="apple-theme bg-black h-screen flex flex-col overflow-hidden">
 
+    <a href="{{ url_for('home') }}" class="back-btn liquid-glass" title="Back to Home">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
     <header class="fixed top-0 left-0 w-full z-10 px-6 py-4 border-b border-white/5 bg-black/50 backdrop-blur-xl">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
             <a href="{{ url_for('home') }}" class="text-white/40 hover:text-white transition-colors no-underline">

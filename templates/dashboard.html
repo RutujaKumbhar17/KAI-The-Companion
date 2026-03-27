@@ -23,13 +23,17 @@
 </head>
 <body class="apple-theme bg-black min-h-screen p-6 md:p-12 overflow-x-hidden">
 
+    <a href="{{ url_for('home') }}" class="back-btn liquid-glass" title="Back to Home">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
     <div class="max-w-6xl mx-auto">
         <header class="flex items-center justify-between mb-16">
             <a href="{{ url_for('home') }}" class="text-white/40 hover:text-white transition-colors no-underline">
                 <i class="fas fa-arrow-left mr-2"></i> Home
             </a>
             <h1 class="text-4xl italic">Wellness Dashboard</h1>
-            <div class="w-10"></div> <!-- Spacer -->
+ <!-- Spacer -->
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">

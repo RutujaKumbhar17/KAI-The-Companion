@@ -28,13 +28,14 @@
 </head>
 <body class="apple-theme bg-black h-screen flex overflow-hidden">
 
+    <a href="{{ url_for('home') }}" class="back-btn liquid-glass" title="Back to Home">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
     <!-- Sidebar -->
     <aside class="w-80 sidebar flex flex-col bg-black/20 backdrop-blur-xl">
         <div class="p-6 border-b border-white/5">
             <div class="flex items-center justify-between mb-8">
-                <a href="{{ url_for('home') }}" class="text-white/40 hover:text-white transition-colors text-xs no-underline">
-                    <i class="fas fa-arrow-left mr-1"></i> Home
-                </a>
                 <span class="text-xs font-heading italic text-white/80">My Diary</span>
             </div>
             <button id="new-note-btn" class="w-full liquid-glass-strong py-3 rounded-full flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform text-sm font-medium">
