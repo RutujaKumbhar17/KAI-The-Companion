@@ -1,0 +1,24 @@
+# Ignore local config with API keys
+config.py
+
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+*.__pycache__
+*.pyc
+static\audio/
+
+
+epickai
+
+
+captured_frames
+
+*.mp3
+
+model_cache
+
+users.json

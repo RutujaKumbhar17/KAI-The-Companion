@@ -1,0 +1,178 @@
+/* diary.css */
+.diary-wrapper {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    background: #121212;
+    color: #e0e0e0;
+    overflow: hidden;
+}
+
+/* Sidebar */
+.diary-sidebar {
+    width: 350px;
+    background: #1a1a1a;
+    border-right: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 25px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.new-note-btn {
+    width: 100%;
+    padding: 12px;
+    background: #008069;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.new-note-btn:hover { background: #00a386; }
+
+.search-bar {
+    width: 100%;
+    position: relative;
+}
+
+.search-bar input {
+    width: 100%;
+    background: #252525;
+    border: 1px solid #333;
+    padding: 10px 15px 10px 35px;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
+
+.search-bar i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+}
+
+.note-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.note-snippet {
+    padding: 20px 25px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.note-snippet:hover { background: rgba(255,255,255,0.03); }
+.note-snippet.active { background: rgba(0,128,105,0.1); border-left: 3px solid #008069; }
+
+.snippet-title { font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.snippet-meta { font-size: 0.75rem; color: #666; margin-bottom: 8px; }
+.snippet-preview { font-size: 0.85rem; color: #999; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Main Editor */
+.diary-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #121212;
+    transition: opacity 0.3s ease;
+}
+
+.editor-toolbar {
+    padding: 15px 30px;
+    background: #1a1a1a;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.toolbar-btn {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: all 0.2s;
+}
+
+.toolbar-btn:hover { background: #333; color: #fff; }
+.toolbar-btn.active { color: #008069; }
+
+.editor-content {
+    flex: 1;
+    padding: 50px 10% 100px 10%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.note-title-input {
+    background: transparent;
+    border: none;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: white;
+    outline: none;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.rich-editor {
+    flex: 1;
+    background: transparent;
+    border: none;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #ccc;
+    outline: none;
+    tab-size: 4;
+    white-space: pre-wrap;
+    min-height: 300px;
+}
+
+.save-status {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+/* Empty State */
+.empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+}
+
+.empty-state i { font-size: 5rem; margin-bottom: 20px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .diary-sidebar { width: 100%; position: absolute; z-index: 100; transition: transform 0.3s; }
+    .diary-sidebar.collapsed { transform: translateX(-100%); }
+    .diary-main { width: 100%; }
+}

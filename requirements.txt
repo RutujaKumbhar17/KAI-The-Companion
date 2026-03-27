@@ -1,0 +1,17 @@
+flask
+flask-socketio
+opencv-python
+numpy
+deepface
+tf-keras
+gTTS
+requests
+transformers
+torch
+Pillow
+pandas
+pyttsx3
+python-socketio
+eventlet
+google-generativeai
+protobuf<6.0.0

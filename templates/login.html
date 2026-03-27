@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign In - Kai</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="login-body">
+
+    <div class="login-container fade-in-up">
+        <div class="login-header">
+            <h2>Welcome Back</h2>
+            <p>Continue your wellness journey with Kai</p>
+        </div>
+
+        <form id="loginForm" class="login-form">
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" placeholder="Email Address" required>
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+
+            <div class="remember-me">
+                <input type="checkbox" id="remember">
+                <label for="remember">Remember me</label>
+            </div>
+
+            <button type="submit" class="btn-primary full-width">Sign In</button>
+        </form>
+        
+        <div class="login-footer">
+            <p>Don't have an account? <a href="#">Create one</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Professional Login Logic simulation
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const rememberCheckbox = document.getElementById('remember');
+
+        // Check if user info is saved
+        window.addEventListener('load', () => {
+            const savedEmail = localStorage.getItem('kai_email');
+            const savedPass = localStorage.getItem('kai_pass');
+            if (savedEmail) {
+                emailInput.value = savedEmail;
+                rememberCheckbox.checked = true;
+                // Optional: Auto-fill password if insecurely requested for demo
+                if (savedPass) passwordInput.value = atob(savedPass); 
+            }
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const btn = loginForm.querySelector('button');
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Signing in...';
+            btn.style.opacity = '0.8';
+
+            // Save credentials if requested (Frontend Simulation)
+            if (rememberCheckbox.checked) {
+                localStorage.setItem('kai_email', emailInput.value);
+                // Note: Storing passwords in localStorage is not secure for production apps, 
+                // but fulfills the request for this specific project demo.
+                localStorage.setItem('kai_pass', btoa(passwordInput.value)); 
+            } else {
+                localStorage.removeItem('kai_email');
+                localStorage.removeItem('kai_pass');
+            }
+
+            // Simulate API delay for professional feel
+            setTimeout(() => {
+                window.location.href = "{{ url_for('home') }}";
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

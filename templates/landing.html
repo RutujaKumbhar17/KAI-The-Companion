@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kai - Your Wellness Companion</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="landing-body">
+    
+    <nav class="navbar">
+        <div class="logo">Kai.</div>
+        <div class="nav-links">
+            <a href="#">About</a>
+            <a href="#">Features</a>
+            <a href="{{ url_for('login') }}" class="btn-nav">Sign In</a>
+        </div>
+    </nav>
+
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1 class="fade-in-up">Find Peace in Conversation</h1>
+            <p class="fade-in-up delay-1">
+                Kai is an emotionally intelligent 3D companion designed to listen, understand, and help you navigate your thoughts in a safe, judgment-free space.
+            </p>
+            <div class="hero-buttons fade-in-up delay-2">
+                <a href="{{ url_for('login') }}" class="btn-primary">Start Your Journey</a>
+                <a href="#features" class="btn-secondary">Learn More</a>
+            </div>
+        </div>
+        <div class="hero-visual fade-in delay-1">
+            <div class="glowing-circle"></div>
+            <i class="fas fa-hand-holding-heart floating-icon"></i>
+        </div>
+    </div>
+
+    <div id="features" class="features-section">
+        <div class="feature-card fade-in-up">
+            <i class="fas fa-brain"></i>
+            <h3>Emotional Intelligence</h3>
+            <p>Kai analyzes subtle cues to understand how you truly feel, adapting its personality to support you.</p>
+        </div>
+        <div class="feature-card fade-in-up delay-1">
+            <i class="fas fa-shield-alt"></i>
+            <h3>Safe & Private</h3>
+            <p>Your conversations are your own. Experience a therapy-like environment from the comfort of your home.</p>
+        </div>
+        <div class="feature-card fade-in-up delay-2">
+            <i class="fas fa-infinity"></i>
+            <h3>Always Available</h3>
+            <p>Day or night, Kai is here to listen. No appointments needed, just meaningful connection.</p>
+        </div>
+    </div>
+
+</body>
+</html>

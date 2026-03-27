@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Diary - Kai Companion</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/diary.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Small override for general style Conflict */
+        body { display: block; height: 100vh; overflow: hidden; }
+    </style>
+</head>
+<body>
+    <div class="diary-wrapper">
+        <!-- Sidebar -->
+        <aside class="diary-sidebar">
+            <div class="sidebar-header">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <a href="{{ url_for('home') }}" class="btn-back" style="font-size: 0.9rem;"><i class="fas fa-arrow-left"></i> Home</a>
+                    <span style="font-weight:bold; color:#008069;">My Diary</span>
+                </div>
+                <button id="new-note-btn" class="new-note-btn">
+                    <i class="fas fa-plus"></i> New Note
+                </button>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Search notes...">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#666;">
+                    <span>Sort by Date</span>
+                    <i class="fas fa-sort-amount-down" id="sort-toggle" style="cursor:pointer;"></i>
+                </div>
+            </div>
+            <div id="note-list" class="note-list">
+                <!-- Notes will be injected here -->
+            </div>
+        </aside>
+
+        <!-- Main Editor -->
+        <main class="diary-main">
+            <div id="editor-view" style="display: none; flex-direction: column; height: 100%;">
+                <div class="editor-toolbar">
+                    <button class="toolbar-btn" data-command="bold" title="Bold"><i class="fas fa-bold"></i></button>
+                    <button class="toolbar-btn" data-command="italic" title="Italic"><i class="fas fa-italic"></i></button>
+                    <button class="toolbar-btn" data-command="insertUnorderedList" title="Bullets"><i class="fas fa-list-ul"></i></button>
+                    <div style="flex:1;"></div>
+                    <button class="toolbar-btn" id="delete-note-btn" title="Delete Note" style="color:#e74c3c;"><i class="fas fa-trash"></i></button>
+                </div>
+                <div class="editor-content">
+                    <input type="text" id="note-title" class="note-title-input" placeholder="Untitled Note">
+                    <div id="note-tags" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <!-- Tags will be injected here -->
+                        <div id="tag-input-container" style="display: flex; align-items: center; gap: 5px;">
+                            <input type="text" id="tag-input" placeholder="+ Add tag" style="background:#222; border:1px solid #333; border-radius:5px; padding:3px 8px; font-size:0.75rem; color:white; width:80px;">
+                        </div>
+                    </div>
+                    <div id="rich-editor" class="rich-editor" contenteditable="true" placeholder="Start writing here..."></div>
+                </div>
+                <div class="save-status" id="save-status">Saved</div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state">
+                <i class="fas fa-feather-alt"></i>
+                <h2>Your thoughts deserve a space.</h2>
+                <p>Click "New Note" to start your first entry.</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/diary.js') }}"></script>
+</body>
+</html>
