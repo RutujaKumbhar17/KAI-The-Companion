@@ -5,16 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In - Kai</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/liquid-glass.css') }}">
 </head>
-<body class="apple-theme bg-black min-h-screen flex items-center justify-center p-6">
+<body class="apple-theme bg-black min-h-screen flex items-center justify-center p-6 overflow-hidden">
 
-    <div class="liquid-glass rounded-[40px] p-12 max-w-md w-full border border-white/5">
+    <!-- Atmospheric Aura Glows -->
+    <div class="aura-glow aura-primary"></div>
+    <div class="aura-glow aura-secondary"></div>
+
+    <!-- Vibrant Calm Background -->
+    <video id="home-bg-video" class="fixed inset-0 w-full h-full object-cover z-0 opacity-70" autoplay loop muted playsinline src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260307_083826_e938b29f-a43a-41ec-a153-3d4730578ab8.mp4"></video>
+    <div class="fixed inset-0 bg-black/20 z-[1] backdrop-blur-[1px]"></div>
+
+    <div class="liquid-glass-strong rounded-[40px] p-12 max-w-md w-full border border-white/10 shadow-2xl relative z-10 backdrop-blur-3xl">
         <div class="text-center mb-10">
-            <h2 class="text-4xl mb-2">Welcome Back</h2>
-            <p class="text-white/40 font-light">Continue your wellness journey with Kai</p>
+            <h2 class="text-5xl mb-4">Welcome Back</h2>
+            <p class="text-white/50 font-light leading-relaxed">Continue your wellness journey with Kai</p>
         </div>
 
         <form id="loginForm" class="space-y-6">

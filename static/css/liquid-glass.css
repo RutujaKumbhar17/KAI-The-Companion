@@ -125,3 +125,49 @@
   letter-spacing: 0.05em;
   margin-bottom: 1.5rem;
 }
+
+/* --- FRESHNESS & VIBRANCY UPGRADES --- */
+.aura-glow {
+  position: fixed;
+  width: 60vw;
+  height: 60vh;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+.aura-primary {
+  background: radial-gradient(circle, #7dd3fc 0%, transparent 70%);
+  top: -10%;
+  right: -10%;
+}
+
+.aura-secondary {
+  background: radial-gradient(circle, #a855f7 0%, transparent 70%);
+  bottom: -10%;
+  left: -10%;
+}
+
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.03);
+  background-blend-mode: overlay;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-glass-strong {
+  background: rgba(255, 255, 255, 0.05);
+  background-blend-mode: overlay;
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.2);
+  position: relative;
+  overflow: hidden;
+}

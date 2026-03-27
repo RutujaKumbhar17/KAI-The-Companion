@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Kai Companion</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/liquid-glass.css') }}">
@@ -21,36 +22,44 @@
         }
     </script>
 </head>
-<body class="apple-theme bg-black min-h-screen p-6 md:p-12">
+<body class="apple-theme bg-black min-h-screen p-6 md:p-12 overflow-x-hidden">
+
+    <!-- Atmospheric Aura Glows -->
+    <div class="aura-glow aura-primary"></div>
+    <div class="aura-glow aura-secondary"></div>
+
+    <!-- Vibrant Calm Background -->
+    <video id="home-bg-video" class="fixed inset-0 w-full h-full object-cover z-0 opacity-70" autoplay loop muted playsinline></video>
+    <div class="fixed inset-0 bg-black/20 z-[1] backdrop-blur-[1px]"></div>
 
     <nav class="fixed top-8 left-8 z-50">
         <div class="w-20 h-10 bg-white rounded-full flex items-center justify-center text-black font-bold tracking-tighter shadow-2xl">KAI.</div>
     </nav>
 
-    <div class="max-w-4xl mx-auto mt-20">
+    <div class="relative z-10 max-w-4xl mx-auto mt-20">
         <div class="text-center mb-16">
-            <h1 class="text-5xl md:text-7xl mb-4">Welcome to Your Space</h1>
-            <p class="text-white/60 text-lg font-light">How would you like to connect with Kai today?</p>
+            <h1 class="text-5xl md:text-7xl mb-4 italic tracking-tight" id="welcome-title">Welcome to Your Space</h1>
+            <p class="text-white/80 text-lg font-light opacity-0" id="welcome-subtext">How would you like to connect with Kai today?</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <a href="{{ url_for('chat') }}" class="liquid-glass rounded-[40px] p-10 flex flex-col items-start gap-6 hover:bg-white/[0.03] transition-all group no-underline text-white border border-white/5">
-                <div class="liquid-glass-strong w-14 h-14 rounded-full flex items-center justify-center text-2xl">
-                    <i class="fas fa-comment-dots text-white/80 group-hover:text-white transition-colors"></i>
+            <a href="{{ url_for('chat') }}" class="liquid-glass rounded-[40px] p-10 flex flex-col items-start gap-6 hover:bg-white/[0.05] transition-all group no-underline text-white border border-white/10 hover:scale-[1.02]">
+                <div class="liquid-glass-strong w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-xl">
+                    <i class="fas fa-comment-dots text-[#7dd3fc] group-hover:scale-110 transition-transform"></i>
                 </div>
                 <div>
                     <h3 class="text-3xl mb-2 italic">Talk with Kai</h3>
-                    <p class="text-white/50 font-light">Text-based conversation and support</p>
+                    <p class="text-white/60 font-light">Text-based conversation and support</p>
                 </div>
             </a>
 
-            <a href="{{ url_for('companion') }}" class="liquid-glass rounded-[40px] p-10 flex flex-col items-start gap-6 hover:bg-white/[0.03] transition-all group no-underline text-white border border-white/5">
-                <div class="liquid-glass-strong w-14 h-14 rounded-full flex items-center justify-center text-2xl">
-                    <i class="fas fa-video text-white/80 group-hover:text-white transition-colors"></i>
+            <a href="{{ url_for('companion') }}" class="liquid-glass rounded-[40px] p-10 flex flex-col items-start gap-6 hover:bg-white/[0.05] transition-all group no-underline text-white border border-white/10 hover:scale-[1.02]">
+                <div class="liquid-glass-strong w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-xl">
+                    <i class="fas fa-video text-[#a855f7] group-hover:scale-110 transition-transform"></i>
                 </div>
                 <div>
                     <h3 class="text-3xl mb-2 italic">Video Call</h3>
-                    <p class="text-white/50 font-light">Interactive 3D avatar experience</p>
+                    <p class="text-white/60 font-light">Interactive 3D avatar experience</p>
                 </div>
             </a>
 
@@ -75,12 +84,44 @@
             </a>
         </div>
 
-        <div class="mt-16 text-center">
-            <a href="{{ url_for('landing') }}" class="text-white/40 hover:text-white transition-colors text-sm no-underline">
-                <i class="fas fa-sign-out-alt mr-2"></i> Sign Out
-            </a>
-        </div>
-    </div>
+    <script>
+        // HLS Initialization
+        function initHls(id, src) {
+            const video = document.getElementById(id);
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(src);
+                hls.attachMedia(video);
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = src;
+            }
+        }
 
+        initHls('home-bg-video', 'https://stream.mux.com/8wrHPCX2dC3msyYU9ObwqNdm00u3ViXvOSHUMRYSEe5Q.m3u8');
+
+        // BlurText Animation logic
+        function splitAndAnimate(id) {
+            const el = document.getElementById(id);
+            const text = el.innerText;
+            el.innerHTML = '';
+            text.split(' ').forEach((word, i) => {
+                const span = document.createElement('span');
+                span.innerText = word + ' ';
+                span.className = 'blur-text-word';
+                span.style.transitionDelay = (i * 100) + 'ms';
+                el.appendChild(span);
+                setTimeout(() => span.classList.add('visible'), 100);
+            });
+        }
+
+        window.onload = () => {
+            splitAndAnimate('welcome-title');
+            setTimeout(() => {
+                const subtext = document.getElementById('welcome-subtext');
+                subtext.style.opacity = '1';
+                subtext.style.transition = 'opacity 1.5s ease';
+            }, 800);
+        };
+    </script>
 </body>
 </html>
