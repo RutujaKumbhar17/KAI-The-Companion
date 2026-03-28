@@ -7,8 +7,8 @@ import time
 import glob 
 import csv
 import json
-import google.generativeai as genai
-from config import apikey
+from google import genai
+from config import apikey, model_name
 import webbrowser
 from collections import deque
 
@@ -18,7 +18,7 @@ app.config['STATIC_URL_PATH'] = '/static'
 app.config['SECRET_KEY'] = 'kai_secret_key'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-genai.configure(api_key=apikey)
+client = genai.Client(api_key=apikey)
 
 # ... (Keep existing Safety Settings & System Instructions unchanged) ...
 safety_settings = [
@@ -42,11 +42,7 @@ system_instruction = (
     "4. **EXCEPTION:** If the user asks 'How do I look?' or 'What is my mood?', THEN you may answer using the tag."
 )
 
-model = genai.GenerativeModel(
-    model_name='gemini-2.5-flash',
-    system_instruction=system_instruction,
-    safety_settings=safety_settings
-)
+# (Deprecated legacy model logic removed)
 
 # Persistent file for chat history
 CHAT_LOG_FILE = os.path.join(BASE_DIR, 'logs', 'chat_history.json')
@@ -289,19 +285,36 @@ def handle_chat(data):
             full_prompt = system_context + user_msg
             current_history = list(conversation_history[sid])
             try:
-                chat = model.start_chat(history=current_history)
-                response = chat.send_message(full_prompt)
+                print(f"[GEMINI] Sending: {full_prompt}")
+                
+                # Using the modern library (google-genai)
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=full_prompt,
+                    config={
+                        'system_instruction': system_instruction,
+                        'safety_settings': safety_settings
+                    }
+                )
+                
                 ai_reply = response.text
+                print(f"[GEMINI] Received: {ai_reply}")
+                
                 conversation_history[sid].append({'role': 'user', 'parts': [user_msg]})
                 conversation_history[sid].append({'role': 'model', 'parts': [ai_reply]})
                 save_chat_log(conversation_history[sid])
             except Exception as e:
-                print(f"Gemini Error: {e}")
+                print(f"Gemini Error (General): {e}")
+                # Fallback response if the SDK fails
                 ai_reply = "I'm having trouble thinking right now."
+        
+        print(f"[SOCKET] Emitting chat_response...")
         emit('chat_response', {'response': ai_reply})
+        
+        print(f"[TTS] Generating audio...")
         audio_url = generate_tts_audio(ai_reply)
         emit('ai_response', {'emotion': 'neutral', 'audio_url': audio_url})
 
 if __name__ == '__main__':
     print("Starting Kai Server (Optimized & Persistent)...")
-    socketio.run(app, debug=True, port=5001)
+    socketio.run(app, debug=True, port=5002)

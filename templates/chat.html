@@ -28,23 +28,28 @@
 </head>
 <body class="apple-theme bg-black h-screen flex flex-col overflow-hidden">
 
+    <!-- Atmospheric Aura Glows -->
+    <div class="aura-glow aura-primary"></div>
+    <div class="aura-glow aura-secondary"></div>
+    <div class="aura-glow bg-blue-500 opacity-10 blur-[120px] absolute -top-40 -left-60 w-[500px] h-[500px] rounded-full"></div>
+    <div class="aura-glow bg-purple-500 opacity-10 blur-[120px] absolute -bottom-40 -right-60 w-[500px] h-[500px] rounded-full"></div>
+
     <a href="{{ url_for('home') }}" class="back-btn liquid-glass" title="Back to Home">
         <i class="fas fa-arrow-left"></i>
     </a>
 
     <header class="fixed top-0 left-0 w-full z-10 px-6 py-4 border-b border-white/5 bg-black/50 backdrop-blur-xl">
-        <div class="max-w-4xl mx-auto flex items-center justify-between">
-            <a href="{{ url_for('home') }}" class="text-white/40 hover:text-white transition-colors no-underline">
-                <i class="fas fa-arrow-left mr-2"></i> Home
-            </a>
+        <div class="max-w-4xl mx-auto flex items-center justify-center">
             <h1 class="text-2xl italic">Chat with Kai</h1>
-            <div class="w-20 h-10 bg-white rounded-full flex items-center justify-center text-black font-bold tracking-tighter">KAI.</div>
         </div>
     </header>
 
-    <main id="chat-messages" class="flex-1 overflow-y-auto px-6 pt-24 pb-32 flex flex-col gap-6 max-w-4xl mx-auto w-full chat-messages">
-        <div class="bot-msg liquid-glass rounded-2xl rounded-bl-none self-start max-w-[80%] p-4 lg:p-5">
-            Hello! I'm here to listen. What's on your mind today?
+    <main id="chat-messages" class="flex-1 overflow-y-auto px-6 pt-28 pb-32 flex flex-col max-w-4xl mx-auto w-full chat-messages">
+        <div class="flex flex-col gap-1 mb-6 items-start">
+            <div class="bot-msg liquid-glass">
+                Hello! I'm Kai, your companion. I'm here to listen and talk. What's on your mind today?
+            </div>
+            <!-- Initial message usually doesn't have audio, keeping as placeholder or removing -->
         </div>
     </main>
 

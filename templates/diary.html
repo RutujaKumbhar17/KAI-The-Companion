@@ -21,12 +21,16 @@
         }
     </script>
     <style>
-        .note-item.active { @apply bg-white/10; }
-        .sidebar { @apply border-r border-white/5; }
+        .note-item.active { background: rgba(255, 255, 255, 0.1); }
+        .sidebar { border-right: 1px solid rgba(255, 255, 255, 0.05); }
         .note-list::-webkit-scrollbar { width: 0px; }
     </style>
 </head>
 <body class="apple-theme bg-black h-screen flex overflow-hidden">
+
+    <!-- Atmospheric Aura Glows -->
+    <div class="aura-glow aura-primary"></div>
+    <div class="aura-glow aura-secondary"></div>
 
     <a href="{{ url_for('home') }}" class="back-btn liquid-glass" title="Back to Home">
         <i class="fas fa-arrow-left"></i>

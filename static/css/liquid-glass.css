@@ -139,9 +139,10 @@
 }
 
 .aura-primary {
-  background: radial-gradient(circle, #6366f1 0%, transparent 70%); /* Muted Indigo */
-  top: -15%;
-  right: -15%;
+  background: radial-gradient(circle, #a855f7 0%, transparent 70%); /* Purple/Violet */
+  top: -20%;
+  right: -20%;
+  opacity: 0.15;
 }
 
 .aura-secondary {
@@ -203,4 +204,63 @@
   transform: scale(1.1) translateY(-2px);
   background: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Chat Message Styles */
+.bot-msg, .user-msg {
+  max-width: 80%;
+  padding: 0.8rem 1.25rem;
+  border-radius: 1.5rem;
+  font-size: 1rem;
+  line-height: 1.4;
+  word-wrap: break-word;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.bot-msg {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom-left-radius: 4px !important;
+  color: #f3f4f6;
+}
+
+.user-msg {
+  align-self: flex-end;
+  background: rgba(168, 85, 247, 0.15); /* Tinted with Purple */
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-bottom-right-radius: 4px !important;
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.1);
+}
+
+/* Audio Toggle Styles */
+.audio-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  opacity: 0.4;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.audio-toggle:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.1);
+}
+
+.audio-toggle.playing {
+  opacity: 1;
+  color: #a855f7;
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.4);
 }

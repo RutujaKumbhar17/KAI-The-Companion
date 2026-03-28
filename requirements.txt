@@ -13,5 +13,5 @@ pandas
 pyttsx3
 python-socketio
 eventlet
-google-generativeai
+google-genai
 protobuf<6.0.0
