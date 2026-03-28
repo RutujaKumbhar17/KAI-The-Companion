@@ -15,18 +15,14 @@
     <!-- Atmospheric Aura Glows -->
     <div class="aura-glow aura-primary"></div>
     <div class="aura-glow aura-secondary"></div>
-
+    
     <a href="{{ url_for('home') }}" class="back-btn liquid-glass" title="Back to Home">
         <i class="fas fa-arrow-left"></i>
     </a>
 
     <div class="relative h-full w-full">
         <header class="absolute top-0 left-0 w-full z-10 px-6 py-6 flex items-center justify-between pointer-events-none">
-            <a href="{{ url_for('home') }}" class="liquid-glass rounded-full px-5 py-2 text-white/60 hover:text-white transition-all no-underline pointer-events-auto border border-white/5 flex items-center gap-2">
-                <i class="fas fa-arrow-left text-xs"></i> Home
-            </a>
-            <div class="w-20 h-10 bg-white rounded-full flex items-center justify-center text-black font-bold tracking-tighter pointer-events-auto">KAI.</div>
- <!-- Spacer -->
+            <!-- UI Elements Removed for Clean Interacting -->
         </header>
 
         <div id="kai-video-container" class="w-full h-full bg-black">
@@ -36,11 +32,6 @@
                 class="w-full h-full border-none"
                 allow="camera; microphone; autoplay; display-capture; encrypted-media;"
             ></iframe>
-            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-10">
-                <div class="liquid-glass rounded-full px-6 py-2 text-white/40 text-xs font-medium uppercase tracking-widest border border-white/5">
-                    Kai (Agent)
-                </div>
-            </div>
         </div>
     </div>
 

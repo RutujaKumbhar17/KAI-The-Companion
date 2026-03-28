@@ -10,7 +10,27 @@ import json
 from google import genai
 from config import apikey, model_name
 import webbrowser
+import sqlite3
 from collections import deque
+
+DB_PATH = os.path.join(BASE_DIR, 'logs', 'peace.db')
+
+def init_db():
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS diary_entries (
+                id TEXT PRIMARY KEY,
+                date TEXT NOT NULL,
+                template_type TEXT NOT NULL,
+                title TEXT,
+                content_json TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        conn.commit()
+
+init_db()
 
 app = Flask(__name__)
 app.config['STATIC_FOLDER'] = 'static'
@@ -122,6 +142,74 @@ def mood_stats():
         })
     except Exception as e:
         return json.dumps({"status": "error", "message": str(e)})
+
+# --- DIARY API ---
+
+@app.route('/api/diary/save', methods=['POST'])
+def save_diary_entry():
+    data = request.json
+    if not data:
+        return json.dumps({"status": "error", "message": "No data provided"}), 400
+    
+    entry_id = data.get('id')
+    date = data.get('date')
+    template = data.get('template')
+    title = data.get('title', 'Untitled Entry')
+    content = json.dumps(data.get('data', {}))
+    
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.cursor()
+            if entry_id:
+                # Update existing
+                cursor.execute('''
+                    INSERT OR REPLACE INTO diary_entries (id, date, template_type, title, content_json)
+                    VALUES (?, ?, ?, ?, ?)
+                ''', (entry_id, date, template, title, content))
+            else:
+                # New entry
+                import uuid
+                entry_id = str(uuid.uuid4())
+                cursor.execute('''
+                    INSERT INTO diary_entries (id, date, template_type, title, content_json)
+                    VALUES (?, ?, ?, ?, ?)
+                ''', (entry_id, date, template, title, content))
+            conn.commit()
+        return json.dumps({"status": "success", "id": entry_id})
+    except Exception as e:
+        return json.dumps({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/diary/entries')
+def get_diary_entries():
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM diary_entries ORDER BY date DESC')
+            rows = cursor.fetchall()
+            entries = []
+            for row in rows:
+                entries.append({
+                    "id": row['id'],
+                    "date": row['date'],
+                    "template": row['template_type'],
+                    "title": row['title'],
+                    "data": json.loads(row['content_json'])
+                })
+        return json.dumps({"status": "success", "entries": entries})
+    except Exception as e:
+        return json.dumps({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/diary/delete/<id>', methods=['DELETE'])
+def delete_diary_entry(id):
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.cursor()
+            cursor.execute('DELETE FROM diary_entries WHERE id = ?', (id,))
+            conn.commit()
+        return json.dumps({"status": "success"})
+    except Exception as e:
+        return json.dumps({"status": "error", "message": str(e)}), 500
 
 # --- HELPER FUNCTIONS ---
 # ... (Keep all existing helper functions: cleanup_audio_folder, generate_tts_audio, process_browser_command, load_emotion_logs, save_chat_log, load_chat_log, calculate_weighted_emotion UNCHANGED) ...
