@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
-KAI (Knowledgeable Artificial Intelligence) is more than just a chatbot; it is a **multimodal emotional companion** designed to bridge the gap between human sentiment and artificial intelligence. Built with a focus on empathy, aesthetics, and mental well-being, KAI leverages computer vision and advanced language models to provide a sanctuary for self-reflection and connection.
+KAI is more than just a chatbot; it is a **multimodal emotional companion** designed to bridge the gap between human sentiment and artificial intelligence. Built with a focus on empathy, aesthetics, and mental well-being, KAI leverages computer vision and advanced language models to provide a sanctuary for self-reflection and connection.
 
 ---
 
