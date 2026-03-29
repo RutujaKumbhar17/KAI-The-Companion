@@ -1,155 +1,199 @@
-# Kai The Companion: An Emotionally Intelligent 3D AI Video Companion
+# 🌌 KAI: The Companion
+### *Your Soulful AI Reflection and Emotional Sanctuary*
 
-**Kai The Companion** is a sophisticated, therapy-inspired AI companion designed to provide real-time, empathetic interaction through video and text. By leveraging computer vision and natural language processing, Kai detects user emotions via facial expressions and adapts its conversational tone to offer a personalized wellness experience.
+[![GitHub Stars](https://img.shields.io/github/stars/RutujaKumbhar17/KAI-The-Companion?style=social)](https://github.com/RutujaKumbhar17/KAI-The-Companion)
+[![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
-## 🚀 Key Features
-
-* **Real-time Emotion Detection:** Uses computer vision models to analyze facial expressions and map them to emotions such as Happy, Sad, Angry, and Fear.
-* **Dynamic 3D Avatar:** Features a high-fidelity 3D avatar with lip-syncing and mood-based animations.
-* **Adaptive Conversational AI:** Powered by Google's Gemini models, Kai receives emotional context tags to adjust its tone.
-* **Smart Browser Commands:** Capability to search Google or play YouTube videos via voice/text commands.
+KAI (Knowledgeable Artificial Intelligence) is more than just a chatbot; it is a **multimodal emotional companion** designed to bridge the gap between human sentiment and artificial intelligence. Built with a focus on empathy, aesthetics, and mental well-being, KAI leverages computer vision and advanced language models to provide a sanctuary for self-reflection and connection.
 
 ---
 
-## 🏗️ Project Architectures
+## 🏗️ System Architecture
 
-### **1. System Architecture**
-
-This diagram uses high-contrast styling with **thick black connectors** to ensure full visibility of the client-to-backend pipeline.
+KAI's architecture is built on a **Real-time Asynchronous Hub** model, ensuring that visual perception and conversational logic happen simultaneously without lag.
 
 ```mermaid
 graph TD
-    %% Global Styles and Line Thickness
-    linkStyle default stroke:#87CEEB,stroke-width:3px;
-    classDef user fill:#ffffff,stroke:#000000,stroke-width:3px,color:#000000;
-    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000000;
-    classDef backend fill:#f3e5f5,stroke:#4a148c,stroke-width:3px,color:#000000;
-    classDef storage fill:#fff3e0,stroke:#e65100,stroke-width:3px,color:#000000;
-    
-
-    User((User Interaction)):::user
-    
-    subgraph Frontend_Client [Frontend: Client Side]
-        UI[Main UI / Chat Window]
-        Cam[Camera Capture Feed]
-        AV[3D Avatar Rendering]
+    subgraph Client_Side [Frontend - Liquid Glass UI]
+        UI[Web Interface]
+        CAM[Camera Module]
+        MIC[Microphone/Text Input]
     end
-    class Frontend_Client frontend
-    
-    subgraph Backend_Server [Backend: Python Flask Server]
-        Srv[Flask-SocketIO App]
-        CV_Engine[Emotion Analysis Engine]
-        AI_Brain[Gemini LLM Integration]
-        TTS_Engine[Speech Synthesis]
+
+    subgraph Backend_Server [Flask + SocketIO Hub]
+        SRV[Main Server]
+        EMO[Emotion Engine]
+        LLM[Logic & Empathy Engine]
+        TTS[Vocal Synthesis]
     end
-    class Backend_Server backend
 
-    subgraph Data_Storage [Data Logs]
-        Hist[(Chat History JSON)]
-        EmoteLogs[(Emotion CSV Logs)]
+    subgraph Intelligence_Layer [AI Models]
+        DF[DeepFace & OpenCV]
+        GM[Gemini 1.5 & OpenRouter]
+        GT[gTTS / pyttsx3]
     end
-    class Data_Storage storage
 
-    %% Connections with specific visibility
-    User ==>|Visual Expression| Cam
-    Cam ==>|Base64 Image Frame| Srv
-    Srv ==>|Raw Frame| CV_Engine
-    CV_Engine ==>|Logged Emotion| EmoteLogs
-    
-    User ==>|Text Message| UI
-    UI ==>|Socket Event| Srv
-    
-    EmoteLogs ==>|Mood Context| AI_Brain
-    Srv ==>|Prompt Ingestion| AI_Brain
-    
-    AI_Brain ==>|Text Content| Hist
-    AI_Brain ==>|Response String| TTS_Engine
-    TTS_Engine ==>|Generated Audio URL| AV
-    AV ==>|Voice & LipSync| User
+    subgraph Persistence [Data Layer]
+        DB[(SQLite3 - Diary)]
+        LOG[(CSV - Mood Logs)]
+    end
 
+    CAM -->|Frame Stream| SRV
+    SRV --> EMO
+    EMO --> DF
+    DF -->|Emotion Vector| SRV
+
+    MIC -->|User Prompt| SRV
+    SRV --> LLM
+    LLM --> GM
+    GM -->|Empathetic Response| SRV
+
+    SRV --> TTS
+    TTS --> GT
+    GT -->|Audio Stream| SRV
+
+    SRV --> UI
+    SRV -.-> DB
+    SRV -.-> LOG
 ```
 
-### **2. Detailed Data Flow (DFD)**
+---
 
-The sequence below features participating blocks and participant backgrounds to prevent any white-out effects on text or arrows.
+## 🌊 Seamless Data Flow
+
+Understanding how KAI perceives and reacts to you is key to its "soulful" experience.
 
 ```mermaid
 sequenceDiagram
-    autonumber
-    %% Participants with visible borders
-    participant U as User
-    participant F as Frontend (Client)
-    participant B as Backend (Flask)
-    participant AI as Gemini 2.5 Flash
-    participant TTS as TTS Engine
+    participant User
+    participant Frontend
+    participant EmotionEngine
+    participant ChatLogic
+    participant TTS
+    participant Database
 
-    Note over U, F: PHASE 1: INPUT CAPTURE
-    U->>F: Performs facial expression / Types text
-    F->>B: Sends Text message + Base64 Frame (every 500ms)
+    User->>Frontend: Connects to Sanctuary
+    loop Real-time Perception
+        Frontend->>EmotionEngine: Stream Video Frame
+        EmotionEngine->>EmotionEngine: Analyze Facial Landmarks
+        EmotionEngine-->>Frontend: Update Mood Indicator
+    end
 
-    Note over B, AI: PHASE 2: PROCESSING & INTELLIGENCE
-    
-    B->>B: OpenCV ROI Face Cropping
-    B->>B: Emotion Classification (HuggingFace)
-    B->>B: Weighted Mood Calculation (60s Window)
-    
-    B->>AI: Internal Tag [USER STATE: Mood] + User Text
-    AI-->>B: Empathetic Natural Language Response
-
-    Note over B, U: PHASE 3: FEEDBACK LOOP
-    B->>TTS: Generate Audio from AI Text (pyttsx3)
-    B->>F: Emit 'ai_response' (Audio URL + Mood Key)
-    F->>F: Trigger Three.js Lip-Sync & Animation
-    F->>U: Kai responds with voice and text
-
+    User->>Frontend: "I've had a long day, Kai."
+    Frontend->>ChatLogic: Message + [Weighted Emotion Context]
+    ChatLogic->>ChatLogic: Apply System Instructions (Empathy Layer)
+    ChatLogic-->>Database: Save interaction (SQLite)
+    ChatLogic->>ChatLogic: Process with LLM (OpenRouter)
+    ChatLogic-->>TTS: Convert text to soulful audio
+    TTS-->>Frontend: Play Response & Show Text
+    Frontend-->>User: "I'm here for you. Take a breath."
 ```
 
 ---
 
-## 📊 Technical Stack Breakdown
+## 🧩 Core Project Sections
 
-| Category | Technology Used |
-| --- | --- |
-| **Backend** | Python, Flask, Flask-SocketIO |
-| **Frontend** | HTML5, CSS3, JavaScript (ES6), Three.js |
-| **AI (Language)** | Google Generative AI (Gemini 2.5 Flash) |
-| **Computer Vision** | OpenCV, HuggingFace Transformers |
-| **Speech** | pyttsx3 (Text-to-Speech) |
-| **Avatar Rendering** | TalkingHead library |
+### 1. 🏡 The Landing Hub
+The entryway to your sanctuary. A minimalist, welcoming interface designed to transition the user from the chaos of the digital world into a calm, focused environment.
+
+### 2. 🛡️ The Sanctuary Dashboard
+A personalized "Bento-style" dashboard that visualizes your emotional journey.
+- **Mood Spectrum**: Distribution of your top emotions.
+- **Glow Gallery**: A curated collection of captured moments of happiness (Faceography).
+- **Activity Sprout**: Tracks your daily consistency (Streak) in self-reflection.
+
+### 3. 💬 KAI Companion (The Chat)
+The heart of the project. A dedicated chat interface where KAI uses your current visual mood to adjust its tone. KAI doesn't just read; KAI **sees**.
+
+### 4. 📖 The Diary (Soulful Notes)
+A persistent journaling system with mood-based templates. Whether you're feeling grateful or overwhelmed, the diary provides the right prompt to help you express yourself.
+
+### 5. 📽️ Faceography (Joy Captures)
+KAI automatically captures moments when you smile or show genuine joy, storing them in your personal "Glow Gallery" to remind you of your best moments.
 
 ---
 
-## ⚙️ Installation & Setup
+## 🛠️ Technology Stack
 
-1. **Clone the Repository:**
+| Layer | Technologies |
+| :--- | :--- |
+| **Core Backend** | Flask, Flask-SocketIO, Eventlet |
+| **Frontend** | Vanilla CSS (Liquid Glass), JavaScript, Jinja2 |
+| **Intelligence** | Gemini 1.5 Flash, OpenRouter (GPT-4o), Google GenAI |
+| **Vision** | OpenCV, DeepFace, TensorFlow |
+| **Audio/Voice** | pyttsx3, gTTS |
+| **Data** | SQLite3, Pandas, CSV |
+
+---
+
+## ⚖️ Comparative Analysis
+
+How KAI stands out in the real-world landscape of AI tools:
+
+| Feature | Standard AI Chatbots | Mood Tracking Apps | **KAI: The Companion** |
+| :--- | :--- | :--- | :--- |
+| **Sentiment Analysis** | Text-only (Basic) | Manual Entry | **Real-time Facial Perception** |
+| **Empathy Level** | Informational/Neutral | None | **Adaptive Emotional Tone** |
+| **Memory** | Session-based | Static History | **Persistent Emotional Growth** |
+| **Interaction** | Text only | Multiple Choice | **Multimodal (Voice + Vision + Text)** |
+| **UI Aesthetics** | Utility-focused | Simple/Functional | **Liquid Glass / Premium Design** |
+
+---
+
+## 🔥 Why KAI is Superior?
+
+1. **Vision-Integrated Empathy**: Unlike GPT or Claude, KAI uses your camera feed to detect if you are sad, happy, or angry *before* you even type a word, adjusting its response accordingly.
+2. **Privacy-First Logging**: Data is stored locally in SQLite and CSV, giving the user full control over their emotional history.
+3. **The "Glow" Philosophy**: KAI focuses on positive reinforcement through the Joy Gallery, turning AI from a tool into a mental health ally.
+4. **Zero-Latency Interactions**: Optimized with SocketIO for instantaneous feedback loops.
+
+---
+
+## 🚀 Installation & Usage
+
+### Prerequisites
+- Python 3.9+
+- Camera hardware
+- Google Gemini API Key
+
+### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/rutujakumbhar17/kai-the-companion.git
-cd Kai-The-Companion
-
+git clone https://github.com/RutujaKumbhar17/KAI-The-Companion.git
+cd KAI-The-Companion
 ```
 
-
-2. **Install Dependencies:**
+### Step 2: Install Dependencies
 ```bash
 pip install -r requirements.txt
-
 ```
 
-
-3. **Configure API Key:**
-Create a `config.py` file in the root directory:
+### Step 3: Configure Environment
+Edit `config.py` and add your API credentials:
 ```python
 apikey = "YOUR_GEMINI_API_KEY"
-
+model_name = "gemini-1.5-flash"
 ```
 
-
-4. **Run the Server:**
+### Step 4: Launch the Sanctuary
 ```bash
 python app.py
-
 ```
+*Access the dashboard at `http://127.0.0.1:5002`*
 
+---
 
+## 🔮 Future Enhancements
+- [ ] **Multi-User Profiles**: Personalized emotional memory for different family members.
+- [ ] **Wearable Integration**: Syncing heart rate data (e.g., Apple Watch) for deeper anxiety detection.
+- [ ] **VR Sanctuary**: A fully immersive 3D environment for meditation alongside KAI.
+- [ ] **Global Mood map**: Anonymous, aggregated mood trends to visualize collective well-being.
 
-Access the application at `http://127.0.0.1:5000`.
+---
+
+## 🔗 Connect With Us
+- **Project Link**: [https://github.com/RutujaKumbhar17/KAI-The-Companion](https://github.com/RutujaKumbhar17/KAI-The-Companion)
+- **Author**: Rutuja Kumbhar
+
+---
+*Made with ❤️ and ☕ to bring peace into the digital age.*
