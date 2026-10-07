@@ -1,69 +1,84 @@
+---
+title: KAI-The-Companion
+emoji: 🌌
+colorFrom: yellow
+colorTo: green
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # 🌌 KAI: The Companion
 ### *Your Soulful AI Reflection and Emotional Sanctuary*
 
 [![GitHub Stars](https://img.shields.io/github/stars/RutujaKumbhar17/KAI-The-Companion?style=social)](https://github.com/RutujaKumbhar17/KAI-The-Companion)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
-KAI is more than just a chatbot; it is a **multimodal emotional companion** designed to bridge the gap between human sentiment and artificial intelligence. Built with a focus on empathy, aesthetics, and mental well-being, KAI leverages computer vision and advanced language models to provide a sanctuary for self-reflection and connection.
+KAI is an experimental **multimodal emotional companion** that bridges human sentiment and artificial intelligence. Built with a focus on empathy, calm aesthetics, and self-reflection, KAI combines local computer vision emotion detection with conversational language models to create a personalized digital sanctuary.
 
 - 🌐 [Live Demo](https://huggingface.co/spaces/rutujakumbhar/KAI-The-Companion)
+
 ---
 
 ## 🏗️ System Architecture
 
-KAI's architecture is built on a **Real-time Asynchronous Hub** model, ensuring that visual perception and conversational logic happen simultaneously without lag.
+KAI uses an asynchronous **Flask + SocketIO Hub** architecture to handle video frame analysis, user prompts, speech synthesis, and persistent logging concurrently.
 
 ```mermaid
 graph TD
     subgraph Client_Side [Frontend - Liquid Glass UI]
         UI[Web Interface]
         CAM[Camera Module]
-        MIC[Microphone/Text Input]
+        MIC[Microphone / Text Input]
     end
 
     subgraph Backend_Server [Flask + SocketIO Hub]
-        SRV[Main Server]
-        EMO[Emotion Engine]
-        LLM[Logic & Empathy Engine]
-        TTS[Vocal Synthesis]
+        SRV[Main Server - app.py]
+        EMO[Emotion Engine - camera_utils.py]
+        LLM[Logic & Prompt Engine]
+        TTS[Vocal Synthesis Engine]
     end
 
-    subgraph Intelligence_Layer [AI Models]
-        DF[DeepFace & OpenCV]
-        GM[Gemini 1.5 & OpenRouter]
-        GT[gTTS / pyttsx3]
+    subgraph Intelligence_Layer [AI & ML Models]
+        CV[OpenCV Haar Cascade & HF ViT Classifier]
+        GQ[Groq API - Llama 3.3 70B]
+        OR[OpenRouter API - Fallback]
+        GT[gTTS Primary / pyttsx3 Fallback]
     end
 
     subgraph Persistence [Data Layer]
-        DB[(SQLite3 - Diary)]
-        LOG[(CSV - Mood Logs)]
+        DB[(SQLite3 - Diary Entries)]
+        LOG[(CSV - Emotion Logs)]
+        HIST[(JSON - Chat History)]
     end
 
-    CAM -->|Frame Stream| SRV
+    CAM -->|Webcam Frames via SocketIO| SRV
     SRV --> EMO
-    EMO --> DF
-    DF -->|Emotion Vector| SRV
+    EMO --> CV
+    CV -->|Emotion & Confidence| SRV
 
-    MIC -->|User Prompt| SRV
+    MIC -->|User Message via SocketIO| SRV
     SRV --> LLM
-    LLM --> GM
-    GM -->|Empathetic Response| SRV
+    LLM --> GQ
+    GQ -.->|Fallback on error| OR
+    GQ -->|Empathetic Response| SRV
 
     SRV --> TTS
     TTS --> GT
-    GT -->|Audio Stream| SRV
+    GT -->|Audio URL| SRV
 
     SRV --> UI
     SRV -.-> DB
     SRV -.-> LOG
+    SRV -.-> HIST
 ```
 
 ---
 
 ## 🌊 Seamless Data Flow
 
-Understanding how KAI perceives and reacts to you is key to its "soulful" experience.
+Here is how KAI processes visual emotion signals alongside conversational chat in real time:
 
 ```mermaid
 sequenceDiagram
@@ -71,24 +86,36 @@ sequenceDiagram
     participant Frontend
     participant EmotionEngine
     participant ChatLogic
+    participant GroqLLM as Groq API (Llama 3.3)
+    participant ChatLog as chat_history.json
     participant TTS
-    participant Database
+    participant DiaryDB as SQLite (peace.db)
 
-    User->>Frontend: Connects to Sanctuary
-    loop Real-time Perception
-        Frontend->>EmotionEngine: Stream Video Frame
-        EmotionEngine->>EmotionEngine: Analyze Facial Landmarks
-        EmotionEngine-->>Frontend: Update Mood Indicator
+    Note over User,Frontend: 1. Video Frame & Emotion Processing
+    loop Every 2 Seconds
+        Frontend->>EmotionEngine: Stream camera frame (Base64)
+        EmotionEngine->>EmotionEngine: Detect face (OpenCV) & classify emotion (HF ViT)
+        EmotionEngine-->>Frontend: Emit emotion indicator
+        EmotionEngine->>EmotionEngine: Log emotion to emotion_logs.csv
     end
 
+    Note over User,Frontend: 2. Conversational Interaction
     User->>Frontend: "I've had a long day, Kai."
-    Frontend->>ChatLogic: Message + [Weighted Emotion Context]
-    ChatLogic->>ChatLogic: Apply System Instructions (Empathy Layer)
-    ChatLogic-->>Database: Save interaction (SQLite)
-    ChatLogic->>ChatLogic: Process with LLM (OpenRouter)
-    ChatLogic-->>TTS: Convert text to soulful audio
-    TTS-->>Frontend: Play Response & Show Text
-    Frontend-->>User: "I'm here for you. Take a breath."
+    Frontend->>ChatLogic: socket.emit('chat_message', message)
+    ChatLogic->>ChatLogic: Compute weighted emotion over past 60s
+    ChatLogic->>ChatLogic: Inject [USER STATE: <Emotion>] into system prompt
+    ChatLogic->>GroqLLM: POST chat completion (Llama 3.3 70B)
+    GroqLLM-->>ChatLogic: Conversational response
+    ChatLogic->>ChatLog: Save interaction turn to chat_history.json
+    ChatLogic-->>Frontend: emit('chat_response', response text)
+    ChatLogic->>TTS: Generate audio file (gTTS / pyttsx3)
+    TTS-->>Frontend: emit('ai_response', audio_url)
+    Frontend-->>User: Display text response and play audio
+
+    Note over User,DiaryDB: 3. Guided Diary Journaling
+    User->>Frontend: Submit diary entry form
+    Frontend->>DiaryDB: POST /api/diary/save (Stored in SQLite)
+    DiaryDB-->>Frontend: Status confirmation
 ```
 
 ---
@@ -96,67 +123,87 @@ sequenceDiagram
 ## 🧩 Core Project Sections
 
 ### 1. 🏡 The Landing Hub
-The entryway to your sanctuary. A minimalist, welcoming interface designed to transition the user from the chaos of the digital world into a calm, focused environment.
+A minimalist entryway designed to transition the user into a calm, focused environment.
 
 ### 2. 🛡️ The Sanctuary Dashboard
-A personalized "Bento-style" dashboard that visualizes your emotional journey.
-- **Mood Spectrum**: Distribution of your top emotions.
-- **Glow Gallery**: A curated collection of captured moments of happiness (Faceography).
-- **Activity Sprout**: Tracks your daily consistency (Streak) in self-reflection.
+A personalized "Bento-style" dashboard visualizing emotional trends:
+- **Mood Spectrum**: Aggregate breakdown of detected moods from session logs.
+- **Glow Gallery**: Visual gallery displaying buffered captures and joy moments.
+- **Activity Sprout**: Tracks consecutive days of journaling consistency.
+- **Mindfulness Prompts**: Context-aware reflection suggestions based on recent mood.
 
 ### 3. 💬 KAI Companion (The Chat)
-The heart of the project. A dedicated chat interface where KAI uses your current visual mood to adjust its tone. KAI doesn't just read; KAI **sees**.
+The conversational interface where KAI conditions its empathy on your recent facial mood. KAI receives a context tag (e.g. `[USER STATE: Happy]`) to adjust conversational warmth without robotically repeating the detected label.
 
 ### 4. 📖 The Diary (Soulful Notes)
-A persistent journaling system with mood-based templates. Whether you're feeling grateful or overwhelmed, the diary provides the right prompt to help you express yourself.
+A persistent journaling system backed by SQLite (`peace.db`) featuring structured prompts for gratitude, reflection, and self-expression.
 
 ### 5. 📽️ Faceography (Joy Captures)
-KAI automatically captures moments when you smile or show genuine joy, storing them in your personal "Glow Gallery" to remind you of your best moments.
+During camera sessions, KAI buffers captured face frames in a local buffer (up to 50 frames), cataloging expressions in the gallery.
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Layer | Technologies |
-| :--- | :--- |
-| **Core Backend** | Flask, Flask-SocketIO, Eventlet |
-| **Frontend** | Vanilla CSS (Liquid Glass), JavaScript, Jinja2 |
-| **Intelligence** | Gemini 1.5 Flash, OpenRouter (GPT-4o), Google GenAI |
-| **Vision** | OpenCV, DeepFace, TensorFlow |
-| **Audio/Voice** | pyttsx3, gTTS |
-| **Data** | SQLite3, Pandas, CSV |
+| Layer | Technologies | Role / Description |
+| :--- | :--- | :--- |
+| **Backend Core** | Flask, Flask-SocketIO, Eventlet, python-dotenv | Real-time WebSocket hub and REST API routing |
+| **Frontend** | Vanilla CSS (Liquid Glass UI), JavaScript, Jinja2 | Responsive UI, camera frame capture, audio player |
+| **Primary LLM** | Groq API (`llama-3.3-70b-versatile`) | Fast, empathetic conversational chat and mindfulness generation |
+| **Fallback LLM** | OpenRouter API (`openai/gpt-3.5-turbo`) | Secondary chat completion fallback |
+| **Vision & Emotion** | OpenCV (`cv2`), Hugging Face Transformers, PyTorch (CPU) | Face detection via Haar Cascade; emotion detection via `dima806/facial_emotions_image_detection` |
+| **Speech (TTS)** | gTTS (Primary), pyttsx3 (Offline Fallback) | Vocal response synthesis served through static audio endpoints |
+| **Data & Storage** | SQLite3, CSV, JSON, Pandas | SQLite for diary entries, CSV for emotion logs, JSON for chat logs |
 
 ---
 
 ## ⚖️ Comparative Analysis
 
-How KAI stands out in the real-world landscape of AI tools:
+How KAI compares with conventional chatbots and standalone mood tracking applications:
 
 | Feature | Standard AI Chatbots | Mood Tracking Apps | **KAI: The Companion** |
 | :--- | :--- | :--- | :--- |
-| **Sentiment Analysis** | Text-only (Basic) | Manual Entry | **Real-time Facial Perception** |
-| **Empathy Level** | Informational/Neutral | None | **Adaptive Emotional Tone** |
-| **Memory** | Session-based | Static History | **Persistent Emotional Growth** |
-| **Interaction** | Text only | Multiple Choice | **Multimodal (Voice + Vision + Text)** |
-| **UI Aesthetics** | Utility-focused | Simple/Functional | **Liquid Glass / Premium Design** |
+| **Emotion Input** | Text sentiment only | Manual mood logging | **Real-time camera-based facial emotion detection** |
+| **Tone Adaptation** | Prompt-dependent | Static rules / None | **Dynamic conversational tone guided by recent facial mood** |
+| **Personal Journaling** | External / Prompt-driven | Structured questionnaires | **Integrated Diary with mood-based templates (SQLite)** |
+| **Visual Memories** | None | Manual photo upload | **Session face frame buffering and Joy Gallery (Faceography)** |
+| **Interaction Modality** | Text & Voice | Form inputs | **Multimodal: Video frame streaming, Voice (TTS), and Chat** |
 
 ---
 
-## 🔥 Why KAI is Superior?
+## ✨ What Makes KAI Different
 
-1. **Vision-Integrated Empathy**: Unlike GPT or Claude, KAI uses your camera feed to detect if you are sad, happy, or angry *before* you even type a word, adjusting its response accordingly.
-2. **Privacy-First Logging**: Data is stored locally in SQLite and CSV, giving the user full control over their emotional history.
-3. **The "Glow" Philosophy**: KAI focuses on positive reinforcement through the Joy Gallery, turning AI from a tool into a mental health ally.
-4. **Zero-Latency Interactions**: Optimized with SocketIO for instantaneous feedback loops.
+1. **Camera-Assisted Emotion Context**: Rather than relying only on typed messages, KAI observes facial expressions through your camera feed, injecting a weighted mood signal (e.g. happy, sad, neutral) into the conversation context to guide the assistant's empathy.
+2. **Local Logging & Data Flow**: Conversations are logged to `logs/chat_history.json`, diary entries are saved to SQLite (`logs/peace.db`), and emotion timestamps are recorded in CSV. In local self-hosted setups, this data remains on your machine. When chatting, prompts are sent to third-party LLM APIs (Groq/OpenRouter). On hosted demos (like Hugging Face Spaces), data resides inside the container instance. (See [Privacy and Data Handling](#-privacy-and-data-handling)).
+3. **The "Glow" Philosophy**: KAI saves and highlights moments of genuine joy captured during sessions, turning companion interactions into positive emotional reinforcement.
+4. **WebSocket-Powered Streaming**: Utilizes Flask-SocketIO for low-latency bidirectional communication between camera frames, textual messages, and synthesized audio. Total response time depends on network latency and external LLM inference speeds.
+
+---
+
+## 🔒 Privacy and Data Handling
+
+- **Local Storage**: When running locally, all databases (`logs/peace.db`), emotion logs (`logs/emotion_logs.csv`), and chat histories (`logs/chat_history.json`) are stored on your local filesystem and ignored from version control.
+- **Hosted Demo Notice**: On public or cloud container instances (such as Hugging Face Spaces), logs and database files exist inside the container instance environment.
+- **Third-Party AI Services**: User messages and system emotion tags are transmitted to third-party LLM providers (Groq and/or OpenRouter) to generate responses. Voice generation with gTTS communicates with Google TTS services.
+- *A detailed privacy policy and retention configuration guide will be added in Phase 2.*
+
+---
+
+## ⚠️ Limitations & Disclaimer
+
+- **Not Medical Advice**: KAI is an experimental AI companion designed for personal self-reflection and emotional well-being. It is **not** a diagnostic tool, medical device, or substitute for licensed therapy or clinical psychiatric care. If you are experiencing mental health distress or crisis, please contact professional medical services or crisis hotlines.
+- **Vision Accuracy**: Facial emotion classification relies on a lightweight computer vision pipeline (Haar Cascade + ViT classifier) that may be influenced by lighting conditions, camera angles, facial hair, or occlusions. Detected emotions are heuristic indicators, not definitive psychological assessments.
+- **API Dependencies**: Conversational responses and audio generation depend on external network connectivity and third-party API availability and rate limits.
 
 ---
 
 ## 🚀 Installation & Usage
 
 ### Prerequisites
-- Python 3.9+
-- Camera hardware
-- Google Gemini API Key
+- Python 3.10+ recommended
+- Working camera / webcam hardware
+- **Groq API Key** (Required for primary AI chat; free tier available at [console.groq.com](https://console.groq.com))
+- OpenRouter API Key (Optional fallback)
 
 ### Step 1: Clone the Repository
 ```bash
@@ -164,56 +211,79 @@ git clone https://github.com/RutujaKumbhar17/KAI-The-Companion.git
 cd KAI-The-Companion
 ```
 
-### Step 2: Install Dependencies
+### Step 2: Set Up Virtual Environment & Dependencies
 ```bash
+python -m venv venv
+# On Windows:
+venv\Scripts\activate
+# On Linux/macOS:
+source venv/bin/activate
+
+# Install PyTorch CPU first (required for Hugging Face image classification pipeline):
+pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+# Install remaining dependencies:
 pip install -r requirements.txt
 ```
 
 ### Step 3: Configure Environment
-Edit `config.py` and add your API credentials:
-```python
-apikey = "YOUR_GEMINI_API_KEY"
-model_name = "gemini-1.5-flash"
+Copy the example environment template and configure your secrets:
+```bash
+cp .env.example .env
 ```
+
+Open `.env` in your text editor and fill in your keys:
+```bash
+# Required
+GROQ_API_KEY=your_actual_groq_api_key_here
+
+# Optional defaults
+GROQ_MODEL=llama-3.3-70b-versatile
+PORT=5002
+FLASK_DEBUG=0
+DEBUG_DIAGNOSE=0
+DIAGNOSE_TOKEN=
+```
+
+> ⚠️ **Important Security Rule**: Never commit your `.env` file or paste real API keys into version-controlled files.
 
 ### Step 4: Launch the Sanctuary
 ```bash
 python app.py
 ```
-*Access the dashboard at `http://127.0.0.1:5002`*
+*Access the application in your browser at `http://127.0.0.1:5002`*
 
 ---
 
 ## ☁️ Deployment (Hugging Face Spaces)
 
-This repository is fully optimized for containerized deployment as a **Hugging Face Space** using the Docker SDK.
+This repository includes a standardized `Dockerfile` optimized for containerized deployment on **Hugging Face Spaces**.
 
 ### Deployment Highlights
-- **Base Environment**: Standardized on the full `python:3.10` Debian Bookworm image, ensuring all underlying system binaries are present.
-- **OpenGL and rendering pipelines**: Automatically packages `libgl1`, `libglx-mesa0`, and `libglib2.0-0` to satisfy OpenCV C++ headless execution requirements.
-- **Resilient Vision Loading**: Pre-packages the `haarcascade_frontalface_default.xml` classifier in the project root to guarantee offline face detection loading in container filesystems.
-- **Real-time Diagnostics**: Includes a built-in `/diagnose` endpoint to query package paths, virtual environment isolation, and error tracebacks dynamically in the running container.
+- **Base Environment**: Standardized on `python:3.10` Debian Bookworm image.
+- **Headless OpenCV Libraries**: Packages `libgl1`, `libglx-mesa0`, and `libglib2.0-0` to satisfy OpenCV C++ runtime requirements without an X server.
+- **Resilient Vision Loading**: Packages `haarcascade_frontalface_default.xml` in the repository root for offline face detection.
+- **Protected Diagnostics**: Includes a token-protected `/diagnose` endpoint (enabled via `DEBUG_DIAGNOSE=1` and `DIAGNOSE_TOKEN`) for container health verification without exposing sensitive paths or tracebacks publicly.
 
-### Deploying your own Sanctuary Space
-1. Create a new Space on Hugging Face and choose **Docker** as the SDK.
-2. Link your local repository to the Hugging Face remote:
+### Deploying Your Own Space
+1. Create a new Space on [Hugging Face](https://huggingface.co/spaces) and select **Docker** as the SDK.
+2. In your Space settings (**Settings** -> **Variables and secrets**), add your secrets:
+   - `GROQ_API_KEY` (Required)
+   - `GROQ_MODEL` (Optional, defaults to `llama-3.3-70b-versatile`)
+   - `OPENROUTER_API_KEY` (Optional fallback)
+3. Link your local git repository and push:
    ```bash
    git remote add hf https://huggingface.co/spaces/YOUR_USERNAME/YOUR_SPACE_NAME
-   ```
-3. Push your main branch:
-   ```bash
    git push hf main
    ```
 
 ---
 
 ## 🔮 Future Enhancements
-- [ ] **Multi-User Profiles**: Personalized emotional memory for different family members.
-- [ ] **Wearable Integration**: Syncing heart rate data (e.g., Apple Watch) for deeper anxiety detection.
-- [ ] **VR Sanctuary**: A fully immersive 3D environment for meditation alongside KAI.
-- [ ] **Global Mood map**: Anonymous, aggregated mood trends to visualize collective well-being.
-
-
+- [ ] **Multi-User Profiles**: Personalized emotional memory and diary separation for different users.
+- [ ] **Wearable Integration**: Syncing physiological indicators (e.g. heart rate) for multi-signal stress detection.
+- [ ] **VR Sanctuary**: Immersive 3D environment for guided meditation alongside KAI.
+- [ ] **Aggregated Insights**: Anonymized trend visualizations for personal wellness progress over time.
 
 # Author
  ## 📧 Connect with Me
@@ -226,6 +296,3 @@ This repository is fully optimized for containerized deployment as a **Hugging F
 - 💻 [My GitHub](https://github.com/RutujaKumbhar17)
 
 - 📧 [Email Id](https://rutujakumbhar.prof@gmail.com)
-
----
-*Made with ❤️ and ☕ to bring peace into the digital age.*

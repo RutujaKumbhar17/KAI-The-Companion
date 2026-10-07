@@ -1,27 +1,37 @@
-# Ignore local config with API keys
-# (No longer ignoring config.py as it is securely loaded via environment variables)
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
 
 # Python cache and compiled files
 __pycache__/
 *.py[cod]
 *$py.class
-
 *.__pycache__
 *.pyc
-static\audio/
 
-
-epickai
-
-
-captured_frames
-
-*.mp3
-
-model_cache
-
-users.json
+# Local runtime directories & media
+static/audio/
+captured_frames/
+model_cache/
 logs/
+*.mp3
+*.wav
+
+# Local databases and user data
 *.db
+*.sqlite
+*.sqlite3
 *.csv
 *.json
+!frontend/package.json
+!frontend/tsconfig*.json
+users.json
+
+# Generated analysis charts
+result_*.png
+
+# Virtual environments
+venv/
+.venv/
+epickai/

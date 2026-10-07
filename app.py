@@ -1,6 +1,6 @@
-from flask import Flask, render_template, url_for, request, redirect, send_from_directory
-
+from flask import Flask, render_template, url_for, request, redirect, send_from_directory, abort, jsonify
 from flask_socketio import SocketIO, emit
+import camera_utils
 from camera_utils import analyze_emotion_from_frame, LOG_FILE, BASE_DIR
 try:
     import pyttsx3 
@@ -133,45 +133,44 @@ if not os.path.exists(AUDIO_DIR):
 
 @app.route('/diagnose')
 def diagnose():
-    import sys
-    import os
-    import json
-    
+    # Only enabled if DEBUG_DIAGNOSE=1 and authorized with DIAGNOSE_TOKEN
+    debug_diagnose_enabled = os.environ.get("DEBUG_DIAGNOSE", "0") == "1"
+    expected_token = os.environ.get("DIAGNOSE_TOKEN", "")
+
+    if not debug_diagnose_enabled or not expected_token:
+        abort(404)
+
+    provided_token = request.headers.get("X-Diagnose-Token") or request.args.get("token")
+    if not provided_token or provided_token != expected_token:
+        abort(404)
+
     cv2_status = "Not imported"
-    cv2_file = "N/A"
     cv2_version = "N/A"
-    cv2_attributes = []
-    import_error = None
-    import_error_tb = None
-    
+    has_cascade = False
+
     try:
         import cv2
         cv2_status = "Imported successfully"
-        cv2_file = getattr(cv2, "__file__", "unknown")
         cv2_version = getattr(cv2, "__version__", "unknown")
-        cv2_attributes = [x for x in dir(cv2) if not x.startswith("_")]
+        has_cascade = hasattr(cv2, 'CascadeClassifier')
     except Exception as e:
         cv2_status = "Import failed"
-        import_error = str(e)
-        import traceback
-        import_error_tb = traceback.format_exc()
-        
-    files_in_app = os.listdir(BASE_DIR)
-    
+        app.logger.error(f"Diagnostic cv2 import error: {e}")
+
     diagnostic_info = {
-        "python_version": sys.version,
-        "sys_path": sys.path,
+        "status": "ok",
         "cv2_status": cv2_status,
-        "cv2_file": cv2_file,
         "cv2_version": cv2_version,
-        "import_error": import_error,
-        "import_error_traceback": import_error_tb,
-        "has_CascadeClassifier": hasattr(cv2, 'CascadeClassifier') if cv2_status == "Imported successfully" else False,
-        "files_in_app": files_in_app,
-        "cv2_attributes_tail": cv2_attributes[-50:] if len(cv2_attributes) > 50 else cv2_attributes
+        "has_CascadeClassifier": has_cascade,
+        "model_loaded": getattr(camera_utils, 'emotion_classifier', None) is not None,
+        "cascade_loaded": (
+            getattr(camera_utils, 'face_cascade', None) is not None
+            and not getattr(camera_utils, 'face_cascade', None).empty()
+            if getattr(camera_utils, 'face_cascade', None) is not None else False
+        )
     }
-    
-    return json.dumps(diagnostic_info, indent=4), 200, {'Content-Type': 'application/json'}
+
+    return jsonify(diagnostic_info), 200
 
 @app.route('/')
 def landing():
@@ -237,7 +236,8 @@ def mood_stats():
             "total_logs": sum(emotion_counts.values())
         })
     except Exception as e:
-        return json.dumps({"status": "error", "message": str(e)})
+        app.logger.error(f"Error processing mood stats: {e}")
+        return jsonify({"status": "error", "message": "Failed to retrieve mood statistics."}), 500
 
 @app.route('/api/dashboard-data')
 def dashboard_data():
@@ -573,7 +573,8 @@ def save_diary_entry():
             conn.commit()
         return json.dumps({"status": "success", "id": entry_id})
     except Exception as e:
-        return json.dumps({"status": "error", "message": str(e)}), 500
+        app.logger.error(f"Error saving diary entry: {e}")
+        return jsonify({"status": "error", "message": "Failed to save diary entry."}), 500
 
 @app.route('/api/diary/entries')
 def get_diary_entries():
@@ -592,9 +593,10 @@ def get_diary_entries():
                     "title": row['title'],
                     "data": json.loads(row['content_json'])
                 })
-        return json.dumps({"status": "success", "entries": entries})
+        return jsonify({"status": "success", "entries": entries})
     except Exception as e:
-        return json.dumps({"status": "error", "message": str(e)}), 500
+        app.logger.error(f"Error retrieving diary entries: {e}")
+        return jsonify({"status": "error", "message": "Failed to retrieve diary entries."}), 500
 
 @app.route('/api/diary/delete/<id>', methods=['DELETE'])
 def delete_diary_entry(id):
@@ -603,9 +605,10 @@ def delete_diary_entry(id):
             cursor = conn.cursor()
             cursor.execute('DELETE FROM diary_entries WHERE id = ?', (id,))
             conn.commit()
-        return json.dumps({"status": "success"})
+        return jsonify({"status": "success"})
     except Exception as e:
-        return json.dumps({"status": "error", "message": str(e)}), 500
+        app.logger.error(f"Error deleting diary entry: {e}")
+        return jsonify({"status": "error", "message": "Failed to delete diary entry."}), 500
 
 # --- HELPER FUNCTIONS ---
 # ... (Keep all existing helper functions: cleanup_audio_folder, generate_tts_audio, process_browser_command, load_emotion_logs, save_chat_log, load_chat_log, calculate_weighted_emotion UNCHANGED) ...
@@ -820,4 +823,5 @@ def handle_chat(data):
 if __name__ == '__main__':
     print("Starting Kai Server (Optimized & Persistent)...")
     port = int(os.environ.get("PORT", 5002))
-    socketio.run(app, host='0.0.0.0', debug=True, port=port)
+    debug_mode = os.environ.get("FLASK_DEBUG", "0").lower() in ("1", "true")
+    socketio.run(app, host='0.0.0.0', debug=debug_mode, port=port)

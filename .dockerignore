@@ -1,26 +1,41 @@
+# Version control & internal tools
 .git
-__pycache__
-captured_frames/*
-logs/*
-model_cache/*
-static/audio/*
-*.db
-*.csv
-.env
 .gitignore
+.gitattributes
 .agents
 .gemini
 
-# Exclude virtual environments
+# Secrets and environment files
+.env
+.env.*
+!.env.example
+
+# Python cache & compiled artifacts
+__pycache__
+**/__pycache__
+*.py[cod]
+*.__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+
+# Local runtime data, databases, and logs
+logs/*
+*.db
+*.sqlite
+*.sqlite3
+*.csv
+captured_frames/*
+static/audio/*
+model_cache/*
+
+# Generated test artifacts & image exports
+result_*.png
+
+# Virtual environments
 epickai
 epickai/**
 venv
 venv/**
 .venv
 .venv/**
-
-# Exclude recursive python cache and compiled objects
-**/__pycache__
-**/*.pyc
-**/*.pyo
-**/*.pyd
